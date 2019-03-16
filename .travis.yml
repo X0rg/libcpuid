@@ -1,0 +1,111 @@
+language: c
+
+git:
+  depth: 1
+
+cache: ccache
+
+env:
+  global:
+    - PROJECT=$(echo $TRAVIS_REPO_SLUG | cut -d/ -f2) # Project name, e.g. libcpuid
+    - VERSION=${TRAVIS_TAG/v} # Project version, without 'v' prefix
+    - JOBS=2 # Maximum build jobs
+    - PTS=v141 # Windows PlatformToolset version
+    - MSBUILD_PATH="/c/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin"
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      name: "linux"
+      env:
+        - ASSET="$PROJECT-$VERSION.tar.gz"
+      before_deploy:
+        - make dist-gzip
+
+    - os: osx
+      osx_image: xcode9.4
+      name: "macos"
+      env:
+        - ASSET="$PROJECT-$VERSION-$TRAVIS_JOB_NAME.zip"
+      before_deploy:
+        - mv -v "$TRAVIS_JOB_NAME/include/libcpuid/"* "$TRAVIS_JOB_NAME/include/"
+        - rmdir "$TRAVIS_JOB_NAME/include/libcpuid/"
+        - cp -v Readme.md "$TRAVIS_JOB_NAME/"
+        - zip -v -r "$ASSET" "$TRAVIS_JOB_NAME/"
+
+    - os: windows
+      name: "win32"
+      cache:
+        directories:
+          - /c/Users/travis/AppData/Local/Temp/chocolatey
+      env:
+        - ASSET="$PROJECT-$VERSION-$TRAVIS_JOB_NAME.zip"
+        - PLATFORM="Win32"
+      before_install:
+        - export PATH="$MSBUILD_PATH:$PATH"
+      install:
+        - choco install -y zip
+      script:
+        - for config in Debug Release ReleaseDLL; do MSBuild.exe libcpuid_vc10.sln -p:Configuration=$config -p:Platform=$PLATFORM -p:PlatformToolset=$PTS -maxcpucount:$JOBS -verbosity:m; done
+      after_success:
+        - return 0
+      before_deploy:
+        - DIR="$TRAVIS_BUILD_DIR/$TRAVIS_JOB_NAME"
+        - mkdir -pv "$DIR/"{bin,include,lib}
+        - cd "$TRAVIS_BUILD_DIR/cpuid_tool/x32" && find . -name '*.exe' -exec install -Dv {} $DIR/bin/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x32" && find . -name '*.lib' -exec install -Dv {} $DIR/lib/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x32" && find . -name '*.dll' -exec install -Dv {} $DIR/lib/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x32" && find . -name '*.exp' -exec install -Dv {} $DIR/lib/{} \;
+        - install -Dv "$TRAVIS_BUILD_DIR/libcpuid/"{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DIR/include/"
+        - cd "$TRAVIS_BUILD_DIR"
+        - cp -v Readme.md "$TRAVIS_JOB_NAME/"
+        - zip -v -r "$ASSET" "$TRAVIS_JOB_NAME/"
+
+    - os: windows
+      name: "win64"
+      cache:
+        directories:
+          - /c/Users/travis/AppData/Local/Temp/chocolatey
+      env:
+        - ASSET="$PROJECT-$VERSION-$TRAVIS_JOB_NAME.zip"
+        - PLATFORM="x64"
+      before_install:
+        - export PATH="$MSBUILD_PATH:$PATH"
+      install:
+        - choco install -y zip
+      script:
+        - for config in Debug Release ReleaseDLL; do MSBuild.exe libcpuid_vc10.sln -p:Configuration=$config -p:Platform=$PLATFORM -p:PlatformToolset=$PTS -maxcpucount:$JOBS -verbosity:m; done
+      after_success:
+        - return 0
+      before_deploy:
+        - DIR="$TRAVIS_BUILD_DIR/$TRAVIS_JOB_NAME"
+        - mkdir -pv "$DIR/"{bin,include,lib}
+        - cd "$TRAVIS_BUILD_DIR/cpuid_tool/x64" && find . -name '*.exe' -exec install -Dv {} $DIR/bin/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x64" && find . -name '*.lib' -exec install -Dv {} $DIR/lib/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x64" && find . -name '*.dll' -exec install -Dv {} $DIR/lib/{} \;
+        - cd "$TRAVIS_BUILD_DIR/libcpuid/x64" && find . -name '*.exp' -exec install -Dv {} $DIR/lib/{} \;
+        - install -Dv "$TRAVIS_BUILD_DIR/libcpuid/"{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DIR/include/"
+        - cd "$TRAVIS_BUILD_DIR"
+        - cp -v Readme.md "$TRAVIS_JOB_NAME/"
+        - zip -v -r "$ASSET" "$TRAVIS_JOB_NAME/"
+
+script:
+  - libtoolize || glibtoolize
+  - autoreconf --install
+  - ./configure --prefix=/
+  - make --jobs $JOBS
+
+after_success:
+  - make test-old
+  - make DESTDIR="$PWD/$TRAVIS_JOB_NAME" install
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "ZVqTAPQtnwI4thcvAszgrDIDVGokQ/URvYvgpRdQJJFH1u3T/59uv/XuiQMINLl79FSDNkbQcJcZn5EGiznPzyhuOIlGdcPuy/rrfPaWMX/m0THJF3unEM75a+e/hC34q90hmN+1lZ71atfurXvM6b6xN+iLdTWRzEQwGGzJCzqJQwM74gI/ZPyj0hBeXnTrcf/x/9UJmKgqFb48dTVufN3ztXDY/3X0RJAYqw2xhtf7bIc9LJY1xNfD/x3FnLMxDrNJ6LrIkDQrocYBUd88JQtg9ON5j1DNwBhTFJNy2oAFxeOEM7guV6Cm3VWoLFSfcNDSxu9lyWujjFruJcznrygPUSgYHwSsCoJwiihARqzT+4eyQSrdqdoOliu0516d+7Hr1I/AsiRQX5+P0PealesXKR5d07G+5I7fLC31u/SED2ZzEviPEpwQReSHUCGTTez5NFZQxbJjMGOltQzN4UMzDkSXwOkcNHsv74zmNIvdpc8tuONgcvRI15KkKVXLrS9FNd+db44EiSf5TmJGgZ14GAi3AiS65mRYJkqboX7uO2jGOkVQcSMS2QJ2TsWVRABd1H84G6QYhENqDj/BAIt2DYbNTIBcf0wH23qzj+GUX0iU7f8VV7a0uRBAZQ3VpZ4ZWRYZEDJMEQTsu2gNinJlGG6bG1gP0PbSA/aXMXA="
+  file: "$ASSET"
+  skip_cleanup: true
+  on:
+    branch: travis_ci
+    tags: true

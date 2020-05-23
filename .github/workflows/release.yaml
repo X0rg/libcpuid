@@ -41,9 +41,9 @@ jobs:
 
     - name: Compress artifacts
       run: |
-        (cd macos && zip -r ../libcpuid-$VERSION-macos.zip .)
-        (cd win32 && zip -r ../libcpuid-$VERSION-win32.zip .)
-        (cd win64 && zip -r ../libcpuid-$VERSION-win64.zip .)
+        for dir in macos win32 win64; do
+          zip -r libcpuid-$VERSION-macos.zip "$dir"
+        done
 
     - name: Create continuous release
       uses: ncipollo/release-action@v1

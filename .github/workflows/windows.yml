@@ -29,9 +29,8 @@ jobs:
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `
           /property:PlatformToolset=$Env:PTS `
-          /property:AdditionalLibPaths="$Env:GITHUB_WORKSPACE\build\" `
-          /property:OutDir="$Env:GITHUB_WORKSPACE\build\" `
           /verbosity:detailed
+        dir -r .
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

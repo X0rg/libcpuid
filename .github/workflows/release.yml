@@ -1,0 +1,17 @@
+name: Release
+
+on:
+  push:
+    branches: [ experimental3 ]
+
+  release:
+    name: Release
+    needs: [build_unix, build_win]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v1
+
+    - name: Display structure of downloaded files
+      run: ls -R

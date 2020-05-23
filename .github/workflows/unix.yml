@@ -5,7 +5,7 @@ on:
     branches: [ experimental3 ]
 
 jobs:
-  build:
+  build_unix:
     name: Build
     runs-on: ${{ matrix.os.label }}
     strategy:

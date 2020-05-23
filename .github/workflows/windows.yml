@@ -27,6 +27,7 @@ jobs:
 
     - name: MSBuild
       run: |
+        MSBuild.exe -version
         MSBuild.exe libcpuid_vc10.sln `
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `
@@ -36,10 +37,10 @@ jobs:
     - name: Install
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
+        install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
+        install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
         cd "$GITHUB_WORKSPACE/cpuid_tool/$PLATFORM" && find . -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
         cd "$GITHUB_WORKSPACE/libcpuid/$PLATFORM"   && find . -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
-        install -Dv "$GITHUB_WORKSPACE/libcpuid/"{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
-        install -v "$GITHUB_WORKSPACE/"{AUTHORS,ChangeLog,COPYING,Readme.md} "$DESTDIR/"
       shell: bash
       env:
         DESTDIR: installdir

@@ -26,7 +26,7 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
 
-    - name: MSBuild
+    - name: Build with MSBuild
       run: |
         MSBuild.exe libcpuid_vc10.sln `
           /property:Platform=$Env:PLATFORM `
@@ -35,7 +35,7 @@ jobs:
           /verbosity:normal
 
     - name: Write Readme.win
-      uses: DamianReeves/write-file-action
+      uses: DamianReeves/write-file-action@master
       with:
         path: Readme.win
         contents: |
@@ -48,7 +48,7 @@ jobs:
           Compiler version:
         write-mode: overwrite
 
-    - name: Install
+    - name: Prepate artifacts
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
         echo "$(cat Readme.win) $(MSBuild.exe -version)" > "$DESTDIR/Readme.win"

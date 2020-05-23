@@ -42,7 +42,7 @@ jobs:
     - name: Compress artifacts
       run: |
         for dir in macos win32 win64; do
-          zip -r libcpuid-$VERSION-macos.zip "$dir"
+          zip -r "libcpuid-$VERSION-$dir.zip" "$dir"
         done
 
     - name: Create continuous release

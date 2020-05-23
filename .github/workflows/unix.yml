@@ -2,7 +2,7 @@ name: Build (UNIX)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ experimental3 ]
 
 jobs:
   build_unix:

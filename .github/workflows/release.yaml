@@ -14,6 +14,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        workflow: unix.yml
         commit: ${{ github.sha }}
         name: macos
         path: macos

@@ -11,10 +11,12 @@ jobs:
     strategy:
       matrix:
         config: [Debug, Release, ReleaseDLL]
-        platform: [Win32, x64]
+        platform:
+          - { ms: Win32, name: win32 }
+          - { ms: x64, name: win64 }
     env:
       CONFIG: ${{ matrix.config }}
-      PLATFORM: ${{ matrix.platform }}
+      PLATFORM: ${{ matrix.platform.ms }}
       PTS: v142
 
     steps:
@@ -30,10 +32,20 @@ jobs:
           /property:Configuration=$Env:CONFIG `
           /property:PlatformToolset=$Env:PTS `
           /verbosity:detailed
-        dir -r .
+
+    - name: Install
+      run: |
+        mkdir -pv "$DESTDIR/"{bin,include,lib}
+        find cpuid_tool -type f -name '*.exe'                                   -exec install -Dv "{}" "$DESTDIR/bin/$(echo {} | cut -d/ -f3-)" \;
+        find libcpuid   -type f -name '*.lib' -o -name '*.dll' -o -name '*.exp' -exec install -Dv "{}" "$DESTDIR/lib/$(echo {} | cut -d/ -f3-)" \;
+        install -Dv libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
+        install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
+      shell: bash
+      env:
+        DESTDIR: installdir
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: windows-${{ matrix.config }}
-        path: build/*
+        name: ${{ matrix.config.name }}
+        path: installdir/*

@@ -30,9 +30,8 @@ jobs:
           /property:Configuration=$Env:CONFIG `
           /property:PlatformToolset=$Env:PTS `
           /property:AdditionalLibPaths="$Env:GITHUB_WORKSPACE\build\" `
-          /property:AssemblySearchPaths="$Env:GITHUB_WORKSPACE\build\" `
           /property:OutDir="$Env:GITHUB_WORKSPACE\build\" `
-          /verbosity:m
+          /verbosity:detailed
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

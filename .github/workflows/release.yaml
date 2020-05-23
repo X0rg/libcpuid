@@ -56,7 +56,4 @@ jobs:
         commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         body: |
           Test
-        artifacts: >
-          libcpuid-$VERSION-macos.zip
-          libcpuid-$VERSION-win32.zip
-          libcpuid-$VERSION-win64.zip
+        artifacts: "libcpuid-$VERSION-macos.zip,libcpuid-$VERSION-win32.zip,libcpuid-$VERSION-win64.zip"

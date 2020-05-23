@@ -1,0 +1,35 @@
+name: Build (UNIX)
+
+on:
+  push:
+    branches: [ experimental2 ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Generate build system
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=""
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Install
+      run: |
+        cmake --install build
+        cp -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
+      env:
+        DESTDIR: installdir
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}
+        path: installdir/*

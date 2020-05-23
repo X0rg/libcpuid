@@ -1,0 +1,41 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [ experimental2 ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        config: [Debug, Release, ReleaseDLL]
+        platform: [Win32, x64]
+    env:
+      CONFIG: ${{ matrix.config }}
+      PLATFORM: ${{ matrix.platform }}
+      PTS: v142
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.0
+
+    - name: MSBuild
+      run: |
+        mkdir $GITHUB_WORKSPACE/build
+        MSBuild.exe libcpuid_vc10.sln \
+          -property:Platform=$PLATFORM \
+          -property:Configuration=$CONFIG \
+          -p:PlatformToolset=$PTS \
+          -p:OutputPath="$GITHUB_WORKSPACE/build/" \
+          -verbosity:m
+      shell: bash
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-${{ matrix.config }}
+        path: build/*

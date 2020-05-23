@@ -8,6 +8,8 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    env:
+      VERSION: 0.5.0
 
     steps:
     - name: Download macOS artifacts
@@ -37,19 +39,24 @@ jobs:
         name: win64
         path: win64
 
+    - name: Compress artifacts
+      run: |
+        (cd macos && zip -r ../libcpuid-$VERSION-macos.zip .)
+        (cd win32 && zip -r ../libcpuid-$VERSION-win32.zip .)
+        (cd win64 && zip -r ../libcpuid-$VERSION-win64.zip .)
+
     - name: Create continuous release
-      uses: meeDamian/github-release@2.0
+      uses: ncipollo/release-action@v1
       with:
         token: "${{ secrets.GITHUB_TOKEN }}"
         tag: continuous
         name: Continuous build
-        draft: false
-        prerelease: true
+        draft: true
+        prerelease: false
+        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         body: |
           Test
-        files: >
-          macos/
-          win32/
-          win64
-        gzip: true
-        allow_override: true
+        artifacts: >
+          libcpuid-$VERSION-macos.zip
+          libcpuid-$VERSION-win32.zip
+          libcpuid-$VERSION-win64.zip

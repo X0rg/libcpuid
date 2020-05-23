@@ -25,9 +25,9 @@ jobs:
 
     - name: Install
       run: |
-        cc --version > "$DESTDIR/Readme.$OSNAME"
         cmake --install build
-        cp -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
+        cc --version > "$DESTDIR/Readme.$OSNAME"
+        install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
       env:
         DESTDIR: installdir
         OSNAME: ${{ matrix.os.name }}

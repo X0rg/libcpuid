@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout git repository
+      uses: actions/checkout@v2
+
     - name: Download artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
@@ -17,7 +20,7 @@ jobs:
         workflow: unix.yml
         commit: ${{ github.sha }}
         name: macos
-        path: macos
+        path: artifacts
 
     - name: Display structure of downloaded files
       run: ls -R

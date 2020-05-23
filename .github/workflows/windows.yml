@@ -23,7 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Add msbuild to PATH
+    - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
 
     - name: MSBuild
@@ -36,8 +36,8 @@ jobs:
 
     - name: Install
       run: |
-        MSBuild.exe -version > "$DESTDIR/Readme.win"
         mkdir -pv "$DESTDIR/"{bin,include,lib}
+        MSBuild.exe -version > "$DESTDIR/Readme.win"
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
         cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find * -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;

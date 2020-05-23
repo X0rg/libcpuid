@@ -51,7 +51,7 @@ jobs:
     - name: Prepate artifacts
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
-        echo -e "$(cat Readme.win)\n$(wmic os get caption,version -value)\n$(MSBuild.exe -version)" > "$DESTDIR/Readme.win"
+        echo -e "$(cat Readme.win)\n$(wmic os get caption,version -value | sed '/^[[:space:]]*$/d')\n$(MSBuild.exe -version | sed '/^[[:space:]]*$/d')" > "$DESTDIR/Readme.win"
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
         cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find * -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;

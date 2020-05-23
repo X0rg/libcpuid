@@ -58,7 +58,7 @@ jobs:
         cd "$GITHUB_WORKSPACE/libcpuid/$BITNESS"   && find * -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
       shell: bash
       env:
-        DESTDIR: ${{ env.GITHUB_WORKSPACE }}/installdir
+        DESTDIR: ${{ github.workspace }}/installdir
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

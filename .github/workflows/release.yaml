@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    branches: [ experimental3 ]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifacts
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        commit: ${{ github.sha }}
+        name: macos
+        path: macos
+
+    - name: Display structure of downloaded files
+      run: ls -R

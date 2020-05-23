@@ -31,7 +31,6 @@ jobs:
           /property:Configuration=$Env:CONFIG `
           /property:PlatformToolset=$Env:PTS `
           /property:OutDir="$Env:GITHUB_WORKSPACE\build\" `
-
           /verbosity:m
 
     - name: Upload artifacts

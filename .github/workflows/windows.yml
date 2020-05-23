@@ -34,17 +34,31 @@ jobs:
           /property:PlatformToolset=$Env:PTS `
           /verbosity:normal
 
+    - name: Write Readme.win
+      uses: DamianReeves/write-file-action
+      with:
+        path: Readme.win
+        contents: |
+          The binaries here are compiled with Microsoft Visual C++. The following configurations are built:
+
+          Debug\ - no optimizations, using the static debug C runtime (/MTd)
+          Release\ - optimizations on, using the static C runtime (/MT)
+          ReleaseDLL\ - the library is compiled in a .dll (libcpuid.dll), which you'd need to ship alongside your executable. Static C runtime.
+
+          Compiler version:
+        write-mode: overwrite
+
     - name: Install
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
-        MSBuild.exe -version > "$DESTDIR/Readme.win"
+        echo "$(cat Readme.win) $(MSBuild.exe -version)" > "$DESTDIR/Readme.win"
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
         cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find * -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
         cd "$GITHUB_WORKSPACE/libcpuid/$BITNESS"   && find * -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
       shell: bash
       env:
-        DESTDIR: installdir
+        DESTDIR: ${{ env.GITHUB_WORKSPACE }}/installdir
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

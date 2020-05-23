@@ -30,7 +30,7 @@ jobs:
           -property:Platform=$PLATFORM \
           -property:Configuration=$CONFIG \
           -p:PlatformToolset=$PTS \
-          -p:OutputPath="$GITHUB_WORKSPACE/build/" \
+          -p:OutDir="$GITHUB_WORKSPACE/build/" \
           -verbosity:m
       shell: bash
 

@@ -20,7 +20,6 @@ jobs:
         commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         name: macos
         path: macos
-      run: ls -l
 
     - name: Download Windows artifacts (32-bit)
       uses: dawidd6/action-download-artifact@v2

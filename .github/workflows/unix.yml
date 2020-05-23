@@ -7,10 +7,12 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.label }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os:
+          - { label: macos-latest, name: macos }
+          - { label: ubuntu-latest, name: linux }
 
     steps:
     - uses: actions/checkout@v2
@@ -23,14 +25,15 @@ jobs:
 
     - name: Install
       run: |
-        cc --version
+        cc --version > "$DESTDIR/Readme.$OSNAME"
         cmake --install build
         cp -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
       env:
         DESTDIR: installdir
+        OSNAME: ${{ matrix.os.name }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.os }}
+        name: ${{ matrix.os.name }}
         path: installdir/*

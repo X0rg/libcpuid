@@ -28,7 +28,6 @@ jobs:
 
     - name: MSBuild
       run: |
-        MSBuild.exe /version
         MSBuild.exe libcpuid_vc10.sln `
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `
@@ -37,11 +36,12 @@ jobs:
 
     - name: Install
       run: |
+        MSBuild.exe -version > "$DESTDIR/Readme.win"
         mkdir -pv "$DESTDIR/"{bin,include,lib}
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
-        cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find . -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
-        cd "$GITHUB_WORKSPACE/libcpuid/$BITNESS"   && find . -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
+        cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find * -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
+        cd "$GITHUB_WORKSPACE/libcpuid/$BITNESS"   && find * -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
       shell: bash
       env:
         DESTDIR: installdir

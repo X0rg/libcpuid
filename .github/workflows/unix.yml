@@ -23,6 +23,7 @@ jobs:
 
     - name: Install
       run: |
+        cc --version
         cmake --install build
         cp -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
       env:

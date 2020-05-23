@@ -13,14 +13,32 @@ jobs:
     - name: Checkout git repository
       uses: actions/checkout@v2
 
-    - name: Download artifacts
+    - name: Download macOS artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: unix.yml
         commit: ${{ github.sha }}
         name: macos
-        path: artifacts
+        path: macos
+
+    - name: Download Windows artifacts (32-bit)
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        workflow: windows.yml
+        commit: ${{ github.sha }}
+        name: win32
+        path: win32
+
+    - name: Download Windows artifacts (64-bit)
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        workflow: windows.yml
+        commit: ${{ github.sha }}
+        name: win64
+        path: win64
 
     - name: Display structure of downloaded files
       run: ls -R

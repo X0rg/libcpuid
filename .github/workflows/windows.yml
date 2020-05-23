@@ -25,14 +25,12 @@ jobs:
 
     - name: MSBuild
       run: |
-        mkdir $GITHUB_WORKSPACE/build
         MSBuild.exe libcpuid_vc10.sln \
-          -property:Platform=$PLATFORM \
-          -property:Configuration=$CONFIG \
-          -p:PlatformToolset=$PTS \
-          -p:OutDir="$GITHUB_WORKSPACE/build/" \
+          -property:Platform=$Env:PLATFORM \
+          -property:Configuration=$Env:CONFIG \
+          -p:PlatformToolset=$Env:PTS \
+          -p:OutDir="$Env:GITHUB_WORKSPACE\build\" \
           -verbosity:m
-      shell: bash
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

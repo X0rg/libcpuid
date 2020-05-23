@@ -36,10 +36,10 @@ jobs:
     - name: Install
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
-        find cpuid_tool -type f -name '*.exe'                                   -exec install -Dv "{}" "$DESTDIR/bin/$(echo {} | cut -d/ -f3-)" \;
-        find libcpuid   -type f -name '*.lib' -o -name '*.dll' -o -name '*.exp' -exec install -Dv "{}" "$DESTDIR/lib/$(echo {} | cut -d/ -f3-)" \;
-        install -Dv libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
-        install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
+        cd "$GITHUB_WORKSPACE/cpuid_tool/$PLATFORM" && find . -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
+        cd "$GITHUB_WORKSPACE/libcpuid/$PLATFORM"   && find . -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
+        install -Dv "$GITHUB_WORKSPACE/libcpuid/"{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
+        install -v "$GITHUB_WORKSPACE/"{AUTHORS,ChangeLog,COPYING,Readme.md} "$DESTDIR/"
       shell: bash
       env:
         DESTDIR: installdir
@@ -47,5 +47,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.config.name }}
+        name: ${{ matrix.platform.name }}
         path: installdir/*

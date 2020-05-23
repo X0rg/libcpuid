@@ -29,7 +29,8 @@ jobs:
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `
           /property:PlatformToolset=$Env:PTS `
-          /property:AdditionalLibraryDirectories="$Env:GITHUB_WORKSPACE\build\" `
+          /property:AdditionalLibPaths="$Env:GITHUB_WORKSPACE\build\" `
+          /property:AssemblySearchPaths="$Env:GITHUB_WORKSPACE\build\" `
           /property:OutDir="$Env:GITHUB_WORKSPACE\build\" `
           /verbosity:m
 

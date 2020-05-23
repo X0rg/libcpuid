@@ -80,6 +80,6 @@ jobs:
         body: |
           Test
         files: >
-          ${{ matrix.os.name }}
+          installdir/
         gzip: true
         allow_override: true

@@ -12,10 +12,11 @@ jobs:
       matrix:
         config: [Debug, Release, ReleaseDLL]
         platform:
-          - { ms: Win32, name: win32 }
-          - { ms: x64, name: win64 }
+          - { bitness: x32, ms: Win32, name: win32 }
+          - { bitness: x64, ms: x64, name: win64 }
     env:
       CONFIG: ${{ matrix.config }}
+      BITNESS: ${{ matrix.platform.bitness }}
       PLATFORM: ${{ matrix.platform.ms }}
       PTS: v142
 
@@ -39,8 +40,8 @@ jobs:
         mkdir -pv "$DESTDIR/"{bin,include,lib}
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
-        cd "$GITHUB_WORKSPACE\\cpuid_tool\\$PLATFORM" && find . -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
-        cd "$GITHUB_WORKSPACE\\libcpuid\\$PLATFORM"   && find . -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
+        cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find . -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;
+        cd "$GITHUB_WORKSPACE/libcpuid/$BITNESS"   && find . -type f \( -name '*.lib' -o -name '*.dll' -o -name '*.exp' \) -exec install -Dv "{}" "$DESTDIR/lib/{}" \;
       shell: bash
       env:
         DESTDIR: installdir

@@ -45,13 +45,13 @@ jobs:
           Release\ - optimizations on, using the static C runtime (/MT)
           ReleaseDLL\ - the library is compiled in a .dll (libcpuid.dll), which you'd need to ship alongside your executable. Static C runtime.
 
-          Compiler version:
+          Operating system and compiler version:
         write-mode: overwrite
 
     - name: Prepate artifacts
       run: |
         mkdir -pv "$DESTDIR/"{bin,include,lib}
-        echo "$(cat Readme.win) $(MSBuild.exe -version)" > "$DESTDIR/Readme.win"
+        echo -e "$(cat Readme.win)\n$(wmic os get caption,version -value)\n$(MSBuild.exe -version)" > "$DESTDIR/Readme.win"
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR/"
         install -v libcpuid/{libcpuid_constants.h,libcpuid.h,libcpuid_types.h} "$DESTDIR/include/"
         cd "$GITHUB_WORKSPACE/cpuid_tool/$BITNESS" && find * -type f -name '*.exe'                                         -exec install -Dv "{}" "$DESTDIR/bin/{}" \;

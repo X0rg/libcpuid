@@ -2,40 +2,42 @@ name: Release
 
 on:
   push:
-    branches: [ experimental3 ]
+    tags:
+      - v*
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    env:
-      VERSION: 0.5.0
 
     steps:
+    - name: Get Git tag
+      run: echo ::set-env name=VERSION::${GITHUB_REF#refs/tags/}
+
     - name: Download macOS artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: unix.yml
-        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
+        commit: ${{ github.sha }}
         name: macos
         path: macos
 
-    - name: Download Windows artifacts (32-bit)
+    - name: Download Windows (32-bit) artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: windows.yml
-        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
+        commit: ${{ github.sha }}
         name: win32
         path: win32
 
-    - name: Download Windows artifacts (64-bit)
+    - name: Download Windows (64-bit) artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: windows.yml
-        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
+        commit: ${{ github.sha }}
         name: win64
         path: win64
 
@@ -44,16 +46,24 @@ jobs:
         for dir in macos win32 win64; do
           zip -r "libcpuid-$VERSION-$dir.zip" "$dir"
         done
+      env:
+        VERSION: ${{ env.VERSION }}
 
-    - name: Create continuous release
+    - name: Create release
       uses: ncipollo/release-action@v1
       with:
         token: "${{ secrets.GITHUB_TOKEN }}"
-        tag: continuous
-        name: Continuous build
+        tag: ${{ env.VERSION }}
+        name: ${{ env.VERSION }}
         draft: true
         prerelease: false
-        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         body: |
-          Test $VERSION
+          This is an **official** release.
+          Brief info of changes between the releases can be found in the [ChangeLog](https://github.com/anrieff/libcpuid/blob/master/ChangeLog).
+
+          As a convenience, the following binaries are provided:
+          - A source tarball;
+          - Build for 64-bit macOS (built under macOS 10.15);
+          - Build for 32-bit Windows, using MSVC 16.5, in Debug, Release and Release DLL configurations;
+          - Build for 64-bit Windows, using MSVC 16.5, in Debug, Release and Release DLL configurations.
         artifacts: "libcpuid-${{ env.VERSION }}-macos.zip,libcpuid-${{ env.VERSION }}-win32.zip,libcpuid-${{ env.VERSION }}-win64.zip"

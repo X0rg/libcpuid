@@ -1,8 +1,6 @@
 name: Build (UNIX)
 
-on:
-  push:
-    branches: [ experimental3 ]
+on: [push, pull_request]
 
 jobs:
   build_unix:
@@ -13,6 +11,8 @@ jobs:
         os:
           - { label: macos-latest, name: macos }
           - { label: ubuntu-latest, name: linux }
+    env:
+      OS_NAME: ${{ matrix.os.name }}
 
     steps:
     - uses: actions/checkout@v2
@@ -32,10 +32,9 @@ jobs:
       run: |
         cmake --install build
         install -v AUTHORS ChangeLog COPYING Readme.md "$DESTDIR"
-        echo -e "Operating system and compiler version:\n$(uname -a)\n$(cc --version)" "$DESTDIR/Readme.$OSNAME"
+        echo -e "Operating system and compiler version:\n$(uname -a)\n$(cc --version)" > "$DESTDIR/Readme.$OS_NAME"
       env:
         DESTDIR: installdir
-        OSNAME: ${{ matrix.os.name }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

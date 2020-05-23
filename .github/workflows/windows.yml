@@ -27,7 +27,7 @@ jobs:
 
     - name: MSBuild
       run: |
-        MSBuild.exe -version
+        MSBuild.exe /version
         MSBuild.exe libcpuid_vc10.sln `
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `

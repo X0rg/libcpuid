@@ -26,10 +26,12 @@ jobs:
     - name: MSBuild
       run: |
         MSBuild.exe libcpuid_vc10.sln `
+          /LIBPATH:"$Env:GITHUB_WORKSPACE\build\" `
           /property:Platform=$Env:PLATFORM `
           /property:Configuration=$Env:CONFIG `
-          /p:PlatformToolset=$Env:PTS `
-          /p:OutDir="$Env:GITHUB_WORKSPACE\build\" `
+          /property:PlatformToolset=$Env:PTS `
+          /property:OutDir="$Env:GITHUB_WORKSPACE\build\" `
+
           /verbosity:m
 
     - name: Upload artifacts

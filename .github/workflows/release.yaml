@@ -10,15 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout git repository
-      uses: actions/checkout@v2
-
     - name: Download macOS artifacts
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: unix.yml
-        commit: ${{ github.sha }}
+        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         name: macos
         path: macos
 
@@ -27,7 +24,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: windows.yml
-        commit: ${{ github.sha }}
+        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         name: win32
         path: win32
 
@@ -36,9 +33,23 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         workflow: windows.yml
-        commit: ${{ github.sha }}
+        commit: fb96437e435b315ea4e3dfceb9a95c02a49b7672
         name: win64
         path: win64
 
-    - name: Display structure of downloaded files
-      run: ls -R
+    - name: Create continuous release
+      uses: meeDamian/github-release@2.0
+      with:
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: continuous
+        name: Continuous build
+        draft: false
+        prerelease: true
+        body: |
+          Test
+        files: >
+          macos/
+          win32/
+          win64
+        gzip: true
+        allow_override: true
